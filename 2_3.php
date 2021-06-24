@@ -2,13 +2,12 @@
   // Define a class
   class User {
     // Properties
-    public $name;
-    public $age;
+    private $name;
+    private $age;
 
     // Contstructor
     public function __construct($name, $age)
     {
-      echo 'Class ' . __CLASS__ . ' instantiated <br>';
       $this->name = $name;
       $this->age = $age;
     }
@@ -18,19 +17,32 @@
       return $this->name.' Says Hello';
     }
 
-    // Called when no other references to a certain object
-    // Used for cleanup, closing connections, etc.
-    public function __destruct()
-    {
-      echo 'destructor ran';
+    public function getName() {
+      return $this->name;
     }
+
+    public function setName($name) {
+      $this->name = $name;
+    }
+
+    // __get MAGIC METHOD
+    public function __get($property) {
+      if(property_exists($this, $property)) {
+        return $this->$property;
+      }
+    }
+
+    // __set MAGIC METHOD
+    public function __set($property, $value) {
+      if(property_exists($this, $property)) {
+        $this->$property = $value;
+      }
+      return $this;
+    }
+
+
   }
 
   $user1 = new User('Tyler', 35);
-  echo $user1->name . ' is ' . $user1->age . ' years old<br>';
-  echo $user1->sayHello();
-
-  echo '<br><br>';
-  $user2 = new User('Sarah', 25);
-  echo $user2->name . ' is ' . $user2->age . ' years old<br>';
-  echo $user2->sayHello();
+  $user1->__set('age', 41);
+  echo $user1->__get('age');
